@@ -11,11 +11,21 @@
 
 
 print.rpsftm <- function(x,...) {
-  obj <- x$regression
-  # remove the call object without this it will print the entire data set
-  obj$call <- NULL
-  print(x$call)
-  print(obj)
+  print(x$rand)
+  #NextMethod(generic="print", object=x, ...=...)
+  #searches in the global environment first so doesn't use the print.* defined below.
+  #whereas this looks in the environment that defines the function for the method print.
+  #manually setting the "next" method using a copy of the object
+  y<- x
+  class(y) <- class(y)[2]
+  
+  if( !is.null(y$fail)){
+    cat("Fitting failed." , y$fail,"\n")
+    return()
+  } else {
+    print(y)
+  }
+  
   cat("\npsi:", x$psi)
   cat("\nexp(psi):", exp(x$psi))
   invisible(x)
@@ -40,7 +50,7 @@ print.coxph <- function (x, digits = max(options()$digits - 4, 3), ...){
     savedig <- options(digits = digits)
     on.exit(options(savedig))
     coef <- x$coefficients
-    arm_index <- which(names(coef)=="arm")
+    arm_index <- which(names(coef)==".arm")
     coef <- coef[-arm_index, drop=FALSE]
     se <- sqrt(diag(x$var[-arm_index, -arm_index, drop=FALSE]))
     if (is.null(coef) | is.null(se)) 
@@ -95,8 +105,8 @@ print.survreg <-function (x, ...)
     cat(" Survreg failed.", x$fail, "\n")
     return(invisible(x))
   }
-  coef <- x$coef
-  arm_index <- which(names(coef)=="arm")
+  coef <- x$coefficients
+  arm_index <- which(names(coef)==".arm")
   coef <- coef[-arm_index, drop=FALSE]
 # if (any(nas <- is.na(coef))) {
 #    if (is.null(names(coef))) 
@@ -131,4 +141,21 @@ print.survreg <-function (x, ...)
   else cat("n=", nobs, "\n")
   invisible(x)
 } 
+
+#' print method for rand() objects - to display the summary of rx, by arm
+#'
+#'@title Print method
+#'@export
+#'@name print.rand
+#'@param x a rand() object
+#'@param ... further arguments passed to or from other methods.
+#'@return a summary of rx values broken down by arm for a rand() object
+#'@seealso \code{\link{rand}}, \code{\link{rpsftm}}
+#'@author Simon Bond
+
+
+print.rand <- function(x,...){
+  print( stats::aggregate(rx~arm, data=x, summary) )
+  invisible(x)
+}
 

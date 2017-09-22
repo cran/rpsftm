@@ -1,4 +1,5 @@
 library(rpsftm)
+library(survival)
 context("Test the rpsftm() function")
 
 
@@ -40,6 +41,8 @@ test_that("summary method",{
 
 test_that("detailed print.coxph test",{
   x <- list(fail="yes")
+  class(x) <- "rpsftm"
+  expect_output(print(x),"Fitting failed")
   class(x) <- "coxph"
   expect_output(print(x),"Coxph failed")
   site <- rep(1:10,each=100)
@@ -56,7 +59,7 @@ test_that("detailed print.summary.coxph test",{
                       test=coxph)
   expect_output(summary(fit_coxph),"coef")
   
-  fit_coxph$regression$fail <- "yes"
+  fit_coxph$fail <- "yes"
   expect_output(summary(fit_coxph),"Coxreg failed")
 }
 )
@@ -86,7 +89,7 @@ test_that("detailed print.summary.survreg test",{
                 test=survreg, scale=1)
   expect_output(print(fit),"Scale fixed at")
   
-  fit$regression$fail <- "yes"
+  fit$fail <- "yes"
   expect_output(summary(fit),"Survreg failed")
   fit <- rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs)+strata(site),immdef, censor_time = censyrs, 
                 test=survreg)
@@ -247,14 +250,14 @@ test_that( "check variants on fitting",
 ##These may need to be specific to different fit, ie. adjustment is different for survdiff and coxph.
 test_that("Check that a strata and cluster fits",
           {
-            propX <- with(immdef,1-xoyrs/progyrs)
-            f0 <- rpsftm(Surv(progyrs, prog)~rand(imm,propX), immdef, censor_time = censyrs,
+            f0 <- rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs), immdef, censor_time = censyrs,
                           low_psi=-1, hi_psi=1
                 #formula=~1
                          )
-            category <- rep(c("A","B","C","D"),rep(250,4))
-            covar <- rnorm(1000)
-            clusterId <- rep(1:100,10)
+            immdef$category <- rep(c("A","B","C","D"),rep(250,4))
+            immdef$covar <- rnorm(1000)
+            immdef$clusterId <- rep(1:100,10)
+            f0 <- update(f0, data=immdef)
             f0.strata <- update(f0,~.+strata(category))
             f1 <- update(f0, test=coxph)
             f1.All <- update(f1,~.+strata(category)+covar+cluster(clusterId))
@@ -325,6 +328,36 @@ fit2 <- rpsftm(Surv(progyrs,prog)~rand(imm,1-xoyrs/progyrs)+log(entry+1),
 expect_equal(fit1$psi, fit2$psi)
 }
 )
+
+
+test_that("survfit",{
+          fit0 <- rpsftm(Surv(progyrs,prog)~rand(imm,1-xoyrs/progyrs)+entry, 
+                         data=immdef, censor_time=censyrs, test=coxph)
+          fit1 <- rpsftm(Surv(progyrs,prog)~rand(imm,1-xoyrs/progyrs), 
+                         data=immdef, censor_time=censyrs, test=survdiff)
+          fit2 <- rpsftm(Surv(progyrs,prog)~rand(imm,1-xoyrs/progyrs)+entry, 
+                         data=immdef, censor_time=censyrs, test=survreg)
+          expect_is(survfit(fit0), class="survfit")
+          expect_error(survfit(fit1),"No applicable method")
+          expect_error(survfit(fit2),"No applicable method")
+          
+          }
+          
+)
+
+test_that("residual",{
+  
+  fit0 <- rpsftm(Surv(progyrs,prog)~rand(imm,1-xoyrs/progyrs)+entry, 
+                 data=immdef, censor_time=censyrs, test=coxph)
+  fit1 <- rpsftm(Surv(progyrs,prog)~rand(imm,1-xoyrs/progyrs)+entry, 
+                 data=immdef, censor_time=censyrs, test=survreg)
+  
+  expect_is(residuals(fit0), class="numeric")
+  expect_is(residuals(fit1, "dfbetas"), class="matrix")
+  expect_is(cox.zph(fit0), "cox.zph")
+})
+
+
 #CHECK that each line of code has been called somehow in this testing process??
 #DONE:
 #> #install.packages("covr")

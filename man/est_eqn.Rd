@@ -13,7 +13,7 @@ est_eqn(psi, data, formula, target = 0, test = "survdiff", autoswitch, ...)
 Must contain columns named: time, censor_time,rx, arm.
 Optionally a column named: treat_modifier}
 
-\item{formula}{a forumula object of covariates to adjust for: \code{~strata(A)+B*C}}
+\item{formula}{a formula object of covariates to adjust for: \code{~strata(A)+B*C}}
 
 \item{target}{the value to subtract off from the z-statistic}
 
@@ -31,11 +31,10 @@ A scalar value of the estimating equation: the z-statistics from a test minus a 
 \description{
 Calculates the Estimating Equation to be solved in RPSFTM models
 }
-\author{
-Simon Bond
-}
 \seealso{
 \code{\link{untreated}}
 }
+\author{
+Simon Bond
+}
 \keyword{internal}
-

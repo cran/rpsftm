@@ -1,4 +1,4 @@
-#'Main Function used for estmating causal parameters under the Rank Preserving Structural Failure Time Model
+#'Main Function used for estimating causal parameters under the Rank Preserving Structural Failure Time Model
 #'
 #'@export
 #'@title Rank Preserving Structural Failure Time Model
@@ -19,7 +19,7 @@
 #'@param na.action a missing-data filter function. This is applied to the model.frame after any subset 
 #'argument has been used. Default is options()$na.action.
 #' @param low_psi the lower limit of the range to search for the causal parameter
-#' @param hi_psi the upper limit of the range to search for the causal paramater
+#' @param hi_psi the upper limit of the range to search for the causal parameter
 #' @param alpha the significance level used to calculate confidence intervals
 #' @param treat_modifier an optional variable that psi is multiplied by on an individual observation level to give
 #' differing impact to treatment.
@@ -29,18 +29,27 @@
 #' \itemize{
 #' \item psi: the estimated parameter
 #' \item fit: a survdiff object to produce Kaplan-Meier curves of the estimated counterfactual untreated failure times for each treatment arm
-#' \item formula: a formula representing any adjustments, strata or clusters- used for the \code{update()} function
-#' \item regression: the survival regression object at the estimated value of psi
-#' \item Sstar: the recensored \code{Surv()} data using the estimate value of psi to give counterfactual untreated failure times.
-#' \item ans: the object returned from \code{uniroot} used to solve the estimating equation
 #' \item CI: a vector of the confidence interval around psi
-#' \item call: the R call object
+#' \item Sstar: the recensored \code{Surv()} data using the estimate value of psi to give counterfactual untreated failure times.
+#' \item rand: the rand() object used to specify the allocated and observed amount of treatment.
+#' \item ans: the values from \code{\link[rootSolve]{uniroot.all}} used to solve the estimating equation, 
+#' but embedded within a list as per \code{\link[stats]{uniroot}}, with an extra element \code{root_all},
+#' a vector of all roots found in the case of multiple solutions. The first element of \code{root_all} 
+#' is subsequently used.
 #' \item eval_z: a data frame with the Z-statistics from the estimating equation evaluated at
 #' a sequence of values of psi. Used to plot and check if the range of values to search for solution
 #' and limits of confidence intervals need to be modified.
+#' \item Further elements corresponding to either a \code{survdiff}, \code{coxph}, or \code{survreg} object. This will always include:
+#'   \itemize{
+#'   \item call: the R call object
+#'   \item formula: a formula representing any adjustments, strata or clusters- used for the \code{update()} function
+#'   \item terms: a more detailed representation of the model formula
+#'   }
 #' }
+#' @seealso \code{\link[survival]{survdiff}}, \code{\link[survival]{coxph.object}}, \code{\link[survival]{survreg.object}}
+#'  
 #' @details the formula object \code{Surv(time, status)~rand(arm,rx)}. \code{rand()} stands 
-#' for randomistion, both the randomly assigned and actual observed treatment. 
+#' for randomisation, both the randomly assigned and actual observed treatment. 
 #' \itemize{
 #'   \item arm: the randomised treatment arm. a factor with 2 levels, or numeric variable with values 0/1.
 #'  \item rx: the proportion of time on active treatment (arm=1 or the non-reference level of the factor)
@@ -111,7 +120,7 @@ rpsftm <- function(formula, data, censor_time, subset, na.action,  test = survdi
     ytemp <- terms.inner(formula[[2]])
     xtemp <- terms.inner(formula[[3]])
     if (any(!is.na(match(xtemp, ytemp)))) 
-      warning("a variable appears on both the left and right sides of the formula")
+      stop("a variable appears on both the left and right sides of the formula")
   }
   
   
@@ -126,15 +135,25 @@ rpsftm <- function(formula, data, censor_time, subset, na.action,  test = survdi
     stop("rand() term must not be in any interactions")
   }
   
+  # check for special terms
+  if( length(labels(mf$formula))>1){
+    adjustor_formula <- drop.terms( mf$formula, dropx = rand_drops , keep.response = FALSE)
+    adjustor_names <- unlist( lapply( attr( terms( adjustor_formula), "variables"), terms.inner)[-1])
+    if( any( adjustor_names %in% c(".arm",".rx","time","status"))){
+      warning( "'.arm', '.rx', 'time', 'status' are used internally within rpsftm. Please rename these variables used in the formula outside of rand() and surv()")
+    }
+  }
+  # add in the special covariate .arm
   
-  fit_formula <- terms(update(mf$formula, . ~ arm + .))
+  fit_formula <- terms(update(mf$formula, . ~ .arm + .))
   fit_formula <- drop.terms(fit_formula, dropx = 1 + rand_drops, keep.response = FALSE)
   
+  rand_object <- df[,rand_index]
   
   df_basic <- data.frame( time=df[,response_index][,"time"], 
                           status=df[,response_index][,"status"], 
-                          arm=df[, rand_index][,"arm"], 
-                          rx=df[,rand_index][,"rx"])
+                          ".arm"=df[, rand_index][,"arm"], 
+                          ".rx"=df[,rand_index][,"rx"])
   
   
   df_adjustor <- df[,-c( response_index, rand_index), drop = FALSE]
@@ -143,7 +162,6 @@ rpsftm <- function(formula, data, censor_time, subset, na.action,  test = survdi
     adjustor_formula <- drop.terms( mf$formula, dropx = rand_drops , keep.response = FALSE)
     adjustor_names <- unlist( lapply( attr( terms( adjustor_formula), "variables"), terms.inner)[-1])
     mf$formula <- reformulate(adjustor_names)
-    
     mf$formula <- if (missing(data)) {
       terms(mf$formula)
     } else {
@@ -164,10 +182,19 @@ rpsftm <- function(formula, data, censor_time, subset, na.action,  test = survdi
   
   
   # Check that the number of arms is 2.
-  if (length(unique(df[, "arm"])) != 2) {
+  if (length(unique(df[, ".arm"])) != 2) {
     stop("arm must have exactly 2 observed values")
   }
   
+  # check the values of treatment modifier
+  if ("(treat_modifier)" %in% names(df)) {
+    if( all(df[,"(treat_modifier)"]==0, na.rm = TRUE) ){ 
+      stop("treat_modifier values cannot all be zero")
+    }
+    if( any(df[,"(treat_modifier)"]<=0) ){ 
+      warning("treat_modifier values are not all strictly positive")
+    }
+  }
   
   
   
@@ -181,31 +208,53 @@ rpsftm <- function(formula, data, censor_time, subset, na.action,  test = survdi
   #create values of psi to evaluate in a data frame
   eval_z <- data.frame( psi = seq(low_psi, hi_psi, length=n_eval_z))
   # evaluate them
+  eval_z$Z <- apply(eval_z,1, est_eqn, 
+                    data=df, formula=fit_formula, test=test,
+                    target=0, autoswitch=autoswitch,...=...)
   
-  #need to wrap est_eqn in try() to cope with non-convergent fits
   
-  fn_eval_z <- function(psi){
-    answer <- try( est_eqn(psi,data = df, formula = fit_formula, target = 0, 
-                           test = test, 
-                           autoswitch = autoswitch, ... = ... ),
-                   silent = TRUE
-                   )
-    if (class(answer) == "try-error"){ 
-      return(NA)
-    } else {
-      return(answer)
-    }
+  
+  # solve to find the value of psi that gives the root to z=0, and the
+  # limits of the CI.
+  
+  root <- function(target) {
+    est_eqn_vectorize <- Vectorize(est_eqn, vectorize.args="psi")
+    ans <- rootSolve::uniroot.all(est_eqn_vectorize, 
+                                  c(low_psi, hi_psi), data = df, formula = fit_formula, 
+                                  target = target, test = test, autoswitch = autoswitch, 
+                                  ... = ...)
+    #give back the same elements as uniroot()
+    if( length(ans)>1){warning("Multiple Roots found")}
+    list( root=ans[1], 
+          root_all=ans,
+          f.root= est_eqn(ans[1],
+                          data = df, formula = fit_formula, 
+                          target = target, test = test, autoswitch = autoswitch, 
+                          ... = ...),
+          iter=NA,
+          estim.prec=NA
+    )  
+    
   }
+  ans <- try(root(0), silent = TRUE)
+  ans.error <- class(ans) == "try-error"
   
-  eval_z$Z <- apply(eval_z,1, fn_eval_z)
+ 
   
-  # Preliminary check of low_psi and hi_psi with a meaningful warning
+  # Preliminary check of ans,  low_psi and hi_psi with a meaningful warning
   
-  est_eqn_low <- est_eqn(low_psi, data = df, formula = fit_formula, target = 0, 
-                         test = test,  autoswitch = autoswitch, ... = ...)
-  est_eqn_hi <- est_eqn(hi_psi, data = df, formula = fit_formula, target = 0, 
-                        test = test, autoswitch = autoswitch, ... = ...)
-  if (est_eqn_low * est_eqn_hi > 0) {
+  est_eqn_low <- eval_z[1,"Z"]
+  est_eqn_hi <-  eval_z[n_eval_z,"Z"]
+  
+  
+  if (
+      (  # still get try-errors in simple case as I guess uniroot.all, looks at silly places for psi and crashes survdiff
+        (!ans.error && length(ans$root_all)==0 ) || 
+         ans.error
+      ) &&
+      !is.na( est_eqn_low) && 
+      !is.na( est_eqn_hi ) &&  
+      est_eqn_low * est_eqn_hi > 0) {
     message <- paste("\nThe starting interval (", low_psi, ", ", hi_psi, 
                      ") to search for a solution for psi\ngives values of the same sign (", 
                      signif(est_eqn_low, 3), ", ", signif(est_eqn_hi, 3), ").\nTry a wider interval. plot(obj$eval_z, type=\"s\"), where obj is the output of rpsftm()", 
@@ -213,21 +262,14 @@ rpsftm <- function(formula, data, censor_time, subset, na.action,  test = survdi
     warning(message)
   }
   
-  # solve to find the value of psi that gives the root to z=0, and the
-  # limits of the CI.
+  #Find limits to confidence interval
   
-  root <- function(target) {
-    uniroot(est_eqn, c(low_psi, hi_psi), data = df, formula = fit_formula, 
-            target = target, test = test, autoswitch = autoswitch, 
-            ... = ...)
-  }
-  ans <- try(root(0), silent = TRUE)
   lower <- try(root(qnorm(1 - alpha/2)), silent = TRUE)
   upper <- try(root(qnorm(alpha/2)), silent = TRUE)
   
   # handle errors in root and CI finding
   
-  ans.error <- class(ans) == "try-error"
+ 
   lower.error <- class(lower) == "try-error"
   upper.error <- class(upper) == "try-error"
   if (ans.error) {
@@ -235,14 +277,14 @@ rpsftm <- function(formula, data, censor_time, subset, na.action,  test = survdi
     ans <- list(root = NA)
   }
   if (lower.error) {
-    warning("Evaluation of a limit of the Confidence Interval failed.  It is set to NA")
     lower <- list(root = NA)
   }
   if (upper.error) {
-    warning("Evaluation of a limit of the Confidence Interval failed.  It is set to NA")
     upper <- list(root = NA)
   }
-  
+  if (lower.error|| upper.error) {
+    warning("Evaluation of a limit of the Confidence Interval failed.  It is set to NA")
+  }
   
   
   
@@ -271,29 +313,36 @@ rpsftm <- function(formula, data, censor_time, subset, na.action,  test = survdi
     
     
     Sstar <- untreated(psiHat, df[, "time"], df[, "status"], 
-                       df[,"(censor_time)"],df[, "rx"], df[, "arm"], autoswitch)
+                       df[,"(censor_time)"],df[, ".rx"], df[, ".arm"], autoswitch)
     # Ignores any covariates, strata or adjustors. On Purpose as this is
     # too general to deal with
-    fit <- survival::survfit(Sstar ~ arm, data = df)
+    fit <- survival::survfit(Sstar ~ .arm, data = df, conf.int=1-alpha)
   } else {
     fit <- NULL
     Sstar <- NULL
   }
-  value=list(psi=ans$root, 
-        #for the plot function
-        fit=fit, 
-        #for using the update() function
-        formula=return_formula,
-        #for the print and summary methods
-       regression=attr(ans$f.root, "fit"),
-       #Not strictly needed but why not include it.
-       Sstar=Sstar, 
-       ans=ans, 
-       CI=c(lower$root,upper$root),
-       call=cl,
-       eval_z=eval_z
-       )
+  regression=attr(ans$f.root, "fit")
+  #modify the call and formula (for regressions)
+  regression$call <- cl
+  regression$formula <- return_formula
+  regression$terms <- return_formula
+  
+  
+  value=c(
+    list(
+      psi=ans$root, 
+      #for the plot function
+      fit=fit, 
+      CI=c(lower$root,upper$root),
+      Sstar=Sstar, 
+      rand=rand_object,
+      ans=ans,
+      eval_z=eval_z),
+      #for the print and summary methods
+    regression
+  )
 
   if (length(na.action)){ value$na.action <- na.action }
-  structure(value, class="rpsftm")
+  if( is.na( value$psi )){ value$fail <- "yes"}
+  structure(value, class=c("rpsftm",test))
 }

@@ -51,7 +51,7 @@ test_that("Censoring before Time warning",{
 
 test_that("Variables on left and right terms",
          {
-          expect_warning( rpsftm(Surv(progyrs, prog)~rand(imm, 1-xoyrs/progyrs)+progyrs,immdef, censor_time = censyrs, 
+          expect_error( rpsftm(Surv(progyrs, prog)~rand(imm, 1-xoyrs/progyrs)+progyrs,immdef, censor_time = censyrs, 
                               low_psi=-1, hi_psi=1, test=coxph), "a variable appears on both the left and right sides of the formula")
         
      }
@@ -81,6 +81,17 @@ test_that("rand() interaction",
             expect_error( rpsftm(Surv(progyrs, prog)~def/rand(imm, 1-xoyrs/progyrs),immdef, censor_time = censyrs, 
                                  low_psi=-1, hi_psi=1), "rand\\(\\) term must not be in any interactions")
             
+          }
+)
+
+test_that("using covariates with special clashing names",
+          {
+            .arm <- rep(0:1,500)
+            expect_warning(
+              rpsftm(Surv(progyrs, prog)~rand(imm, 1-xoyrs/progyrs)+ .arm ,immdef, test=coxph, censor_time = censyrs)
+              ,
+              "Please rename"
+            )
           }
 )
 
@@ -132,12 +143,15 @@ test_that("na actions",
           
           )
 
-test_that("error for poor initial starting values",{
-    expect_warning( rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs),immdef, censor_time = censyrs,
+test_that("warning for poor initial starting values",{
+    expect_warning( fit <- rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs),immdef, censor_time = censyrs,
                low_psi=-1, hi_psi=-0.9),
                "The starting interval"
     )
 })
+
+
+
 
 test_that("warning for non-convergencevalues",{
   expect_error( fit <- rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs)+entry,immdef, censor_time = censyrs)
@@ -197,3 +211,53 @@ expect_error(rpsftm(Surv(progyrs, prog)~rand(imm_3arms,1-xoyrs/progyrs),
        data=immdef, censor_time = censyrs))
 }
 )
+
+
+test_that("Checking of Treatment modifier",
+          {
+            
+            mod <- rep(0, nrow(immdef))
+            expect_error(rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs),
+                                data=immdef, treat_modifier=mod, censor_time = censyrs))
+            mod <- rep(-1, nrow(immdef))
+            expect_warning(rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs),
+                                  data=immdef,treat_modifier = mod, censor_time = censyrs),
+                           "treat_modifier values are not all strictly positive"
+                           )
+            mod <- c(0,rep(2,nrow(immdef)-1))
+            expect_warning(fit <- rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs),
+                                  data=immdef,treat_modifier =mod, censor_time = censyrs),
+                           "treat_modifier values are not all strictly positive"
+            )
+            expect_is(fit, class="rpsftm")
+            
+          }
+          
+          )
+
+
+test_that("Multiple Roots",
+          {
+            load("multi_root.Rdata")
+            expect_warning( 
+              fit <- rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs),multi_root, censyrs),
+              "Multiple Roots found"
+              )
+            
+          }
+          )
+test_that("problems with limits",
+          {
+expect_warning(rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs),immdef, censyrs,
+       low_psi = 1, hi_psi=2, test=survreg
+       ), "The starting interval")
+            
+expect_warning(rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs),immdef, censyrs,
+       low_psi = -1, hi_psi=-0.1
+), "Evaluation of a limit")
+          
+expect_warning(rpsftm(Surv(progyrs, prog)~rand(imm,1-xoyrs/progyrs),immdef, censyrs,
+       low_psi = -2, hi_psi=-1), "Evaluation of the estimated values of psi failed")
+          }
+)
+
