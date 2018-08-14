@@ -1,3 +1,7 @@
+# rpsftm 1.2.3
+
+Minor aesthetic corrections to ensure that the print() and summary() output finishes with a new line.
+
 # rpsftm 1.2.2
 
 modified the vignette to conditionally load the package "tableone", or use summary() as an alternative. Tableone package has been archived and so the CRAN checks are failing. 
