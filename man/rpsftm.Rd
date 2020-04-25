@@ -4,9 +4,21 @@
 \alias{rpsftm}
 \title{Rank Preserving Structural Failure Time Model}
 \usage{
-rpsftm(formula, data, censor_time, subset, na.action, test = survdiff,
-  low_psi = -1, hi_psi = 1, alpha = 0.05, treat_modifier = 1,
-  autoswitch = TRUE, n_eval_z = 100, ...)
+rpsftm(
+  formula,
+  data,
+  censor_time,
+  subset,
+  na.action,
+  test = survdiff,
+  low_psi = -1,
+  hi_psi = 1,
+  alpha = 0.05,
+  treat_modifier = 1,
+  autoswitch = TRUE,
+  n_eval_z = 100,
+  ...
+)
 }
 \arguments{
 \item{formula}{a formula with a minimal structure of \code{Surv(time, status)~rand(arm,rx)}.
@@ -55,7 +67,7 @@ a rpsftm method object that is a list of the following:
 \item CI: a vector of the confidence interval around psi
 \item Sstar: the recensored \code{Surv()} data using the estimate value of psi to give counterfactual untreated failure times.
 \item rand: the rand() object used to specify the allocated and observed amount of treatment.
-\item ans: the values from \code{\link[rootSolve]{uniroot.all}} used to solve the estimating equation, 
+\item ans: the values from \code{\link{uniroot_all}} used to solve the estimating equation, 
 but embedded within a list as per \code{\link[stats]{uniroot}}, with an extra element \code{root_all},
 a vector of all roots found in the case of multiple solutions. The first element of \code{root_all} 
 is subsequently used.
