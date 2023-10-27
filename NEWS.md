@@ -1,3 +1,8 @@
+# rpsftm 1.2.8
+
+Changing contact email. minor bug fix to internal function.
+
+
 # rpsftm 1.2.7
 
 created a local  copy of the function rootSolve::uniroot.all -> rpsftm:::uniroot_all to remove dependency.

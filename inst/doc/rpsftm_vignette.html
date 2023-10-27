@@ -1,29 +1,59 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="Simon Bond, Annabel Allison" />
 
-<meta name="date" content="2020-04-24" />
+<meta name="date" content="2023-10-27" />
 
 <title>rpsftm: rank-preserving structural failure time models for survival data</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -35,55 +65,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -92,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -106,6 +142,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -119,9 +156,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -290,7 +324,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -303,285 +338,510 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 
-<h1 class="title toc-ignore">rpsftm: rank-preserving structural failure time models for survival data</h1>
+<h1 class="title toc-ignore">rpsftm: rank-preserving structural failure
+time models for survival data</h1>
 <h4 class="author">Simon Bond, Annabel Allison</h4>
-<h4 class="date">2020-04-24</h4>
+<h4 class="date">2023-10-27</h4>
 
 
 
 <div id="summary" class="section level2">
 <h2>Summary</h2>
-<p>The package <code>rpsftm</code> provides functions to fit a rank preserving structural failure time model to a two-arm clinical trial with survival outcomes.</p>
+<p>The package <code>rpsftm</code> provides functions to fit a rank
+preserving structural failure time model to a two-arm clinical trial
+with survival outcomes.</p>
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The rank preserving structural failure time model (RPSFTM) is a method used to adjust for treatment switching in trials with survival outcomes. Treatment switching occurs when patients switch from their randomised arm to the other treatment during the study. The RPSFTM is due to <em>Robins and Tsiatis (1991)</em> and has been developed by <em>White et al. (1997, 1999)</em>.</p>
-<p>The method is randomisation based and uses only the randomised treatment group, observed event times and treatment history in order to estimate a causal treatment effect. The treatment effect, <span class="math inline">\(\psi\)</span>, is estimated by balancing counter-factual event times (i.e. the time that would be observed if no treatment were received) between treatment groups. A g-estimation procedure is used to find the value of <span class="math inline">\(\psi\)</span> such that a test statistic <span class="math inline">\(Z(\psi) = 0\)</span>. Recensoring must be performed as censoring becomes informative on the counter-factual time scale.</p>
+<p>The rank preserving structural failure time model (RPSFTM) is a
+method used to adjust for treatment switching in trials with survival
+outcomes. Treatment switching occurs when patients switch from their
+randomised arm to the other treatment during the study. The RPSFTM is
+due to <em>Robins and Tsiatis (1991)</em> and has been developed by
+<em>White et al. (1997, 1999)</em>.</p>
+<p>The method is randomisation based and uses only the randomised
+treatment group, observed event times and treatment history in order to
+estimate a causal treatment effect. The treatment effect, <span class="math inline">\(\psi\)</span>, is estimated by balancing
+counter-factual event times (i.e. the time that would be observed if no
+treatment were received) between treatment groups. A g-estimation
+procedure is used to find the value of <span class="math inline">\(\psi\)</span> such that a test statistic <span class="math inline">\(Z(\psi) = 0\)</span>. Recensoring must be
+performed as censoring becomes informative on the counter-factual time
+scale.</p>
 </div>
 <div id="syntax" class="section level2">
 <h2>Syntax</h2>
 <p><code>rpsftm(formula, data, censor_time, subset, na.action, test=survdiff, low_psi=-1, hi_psi=1, alpha=0.05, treat_modifier=1, autoswitch=TRUE, n_eval_z=100, ...)</code></p>
-<p><br> <code>rpsftm</code> is the main function used for estimating causal parameters under the RPSFTM. The arguments are as follows:</p>
+<p><br> <code>rpsftm</code> is the main function used for estimating
+causal parameters under the RPSFTM. The arguments are as follows:</p>
 <ul>
-<li><p><code>formula</code> a formula with a minimal structure of <code>Surv(time, status) ~ rand(arm, rx)</code> where</p>
+<li><p><code>formula</code> a formula with a minimal structure of
+<code>Surv(time, status) ~ rand(arm, rx)</code> where</p>
 <ul>
 <li><code>arm</code> is the randomised treatment arm, and</li>
-<li><code>rx</code> is the proportion of time spent on treatment, taking values in [0, 1].</li>
+<li><code>rx</code> is the proportion of time spent on treatment, taking
+values in [0, 1].</li>
 </ul>
-<p>Further terms can be added to the right hand side to adjust for covariates.</p></li>
-<li><p><code>data</code> an optional data frame containing the variables.</p></li>
-<li><p><code>censor_time</code> the time at which censoring would, or has occurred. This is provided for all observations unlike standard Kaplan-Meier or Cox regression where it is only given for censored observations. If no value is given then recensoring is not applied.</p></li>
-<li><p><code>subset</code> an expression indicating which subset of the rows of data should be used in the fit. This can be a logical vector, a numeric vector indicating which observation numbers are to be included, or a character vector of row names to be included. All observations are included by default.</p></li>
-<li><p><code>na.action</code> a missing-data filter function. This is applied to the <code>model.frame</code> after any subset argument has been used. Default is <code>options()$na.action</code>.</p></li>
-<li><p><code>test</code> one of <code>survdiff</code>, <code>coxph</code> or <code>survreg</code>. Describes the test to be used in the estimating equation. Default is <code>survdiff</code>.</p></li>
-<li><p><code>low_psi</code> the lower limit of the range to search for the causal parameter. Default is -1.</p></li>
-<li><p><code>hi_psi</code> the upper limit of the range to search for the causal parameter. Default is 1.</p></li>
-<li><p><code>alpha</code> the significance level used to calculate the confidence intervals. Default is 0.05.</p></li>
-<li><p><code>treat_modifier</code> an optional parameter that <span class="math inline">\(\psi\)</span> is multiplied by on an individual observation level to give differing impact to treatment. Default is 1.</p></li>
-<li><p><code>autoswitch</code> a logical to autodetect cases of no switching. Default is TRUE. If all observations in an arm have perfect compliance then recensoring is not applied in that arm. If FALSE then recensoring is applied regardless of perfect compliance.</p></li>
-<li><p><code>n_eval_z</code> The number of points between <code>hi_psi</code> and <code>low_psi</code> at which to evaluate the Z-statistics in the estimating equation. Default is 100.</p></li>
+<p>Further terms can be added to the right hand side to adjust for
+covariates.</p></li>
+<li><p><code>data</code> an optional data frame containing the
+variables.</p></li>
+<li><p><code>censor_time</code> the time at which censoring would, or
+has occurred. This is provided for all observations unlike standard
+Kaplan-Meier or Cox regression where it is only given for censored
+observations. If no value is given then recensoring is not
+applied.</p></li>
+<li><p><code>subset</code> an expression indicating which subset of the
+rows of data should be used in the fit. This can be a logical vector, a
+numeric vector indicating which observation numbers are to be included,
+or a character vector of row names to be included. All observations are
+included by default.</p></li>
+<li><p><code>na.action</code> a missing-data filter function. This is
+applied to the <code>model.frame</code> after any subset argument has
+been used. Default is <code>options()$na.action</code>.</p></li>
+<li><p><code>test</code> one of <code>survdiff</code>,
+<code>coxph</code> or <code>survreg</code>. Describes the test to be
+used in the estimating equation. Default is
+<code>survdiff</code>.</p></li>
+<li><p><code>low_psi</code> the lower limit of the range to search for
+the causal parameter. Default is -1.</p></li>
+<li><p><code>hi_psi</code> the upper limit of the range to search for
+the causal parameter. Default is 1.</p></li>
+<li><p><code>alpha</code> the significance level used to calculate the
+confidence intervals. Default is 0.05.</p></li>
+<li><p><code>treat_modifier</code> an optional parameter that <span class="math inline">\(\psi\)</span> is multiplied by on an individual
+observation level to give differing impact to treatment. Default is
+1.</p></li>
+<li><p><code>autoswitch</code> a logical to autodetect cases of no
+switching. Default is TRUE. If all observations in an arm have perfect
+compliance then recensoring is not applied in that arm. If FALSE then
+recensoring is applied regardless of perfect compliance.</p></li>
+<li><p><code>n_eval_z</code> The number of points between
+<code>hi_psi</code> and <code>low_psi</code> at which to evaluate the
+Z-statistics in the estimating equation. Default is 100.</p></li>
 </ul>
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
-<p>The <code>rpsftm</code> function will be illustrated using a simulated dataset <code>immdef</code> based on a randomized controlled trial; see <em>Concorde Coordinating Committee (1994)</em>. The trial compares two policies (immediate or deferred treatment) of zidovudine treatment in symptom free individuals infected with HIV. The immediate treatment arm received treatment at randomisation whilst the deferred arm received treatment either at onset of AIDS related complex or AIDs or development of persistently low CD4 count. The primary endpoint was time to progression to AIDS or CDC group IV disease, or death.</p>
+<p>The <code>rpsftm</code> function will be illustrated using a
+simulated dataset <code>immdef</code> based on a randomized controlled
+trial; see <em>Concorde Coordinating Committee (1994)</em>. The trial
+compares two policies (immediate or deferred treatment) of zidovudine
+treatment in symptom free individuals infected with HIV. The immediate
+treatment arm received treatment at randomisation whilst the deferred
+arm received treatment either at onset of AIDS related complex or AIDs
+or development of persistently low CD4 count. The primary endpoint was
+time to progression to AIDS or CDC group IV disease, or death.</p>
 <div id="data" class="section level3">
 <h3>Data</h3>
-<p>The <code>immdef</code> data frame has 1000 observations and 8 variables:</p>
+<p>The <code>immdef</code> data frame has 1000 observations and 8
+variables:</p>
 <ul>
 <li><strong>id</strong> participant ID number</li>
-<li><strong>def</strong> indicator that the participant was assigned to the Deferred treatment arm</li>
-<li><strong>imm</strong> indicator that the participant was assigned to the Immediate treatment arm</li>
-<li><strong>censyrs</strong> censoring time, corresponding to the close of study minus the time of randomisation for each participant</li>
+<li><strong>def</strong> indicator that the participant was assigned to
+the Deferred treatment arm</li>
+<li><strong>imm</strong> indicator that the participant was assigned to
+the Immediate treatment arm</li>
+<li><strong>censyrs</strong> censoring time, corresponding to the close
+of study minus the time of randomisation for each participant</li>
 <li><strong>xo</strong> an indicator that crossover occurred</li>
-<li><strong>xoyrs</strong> the time from randomisation at which crossover happened, or 0 for participants in the Immediate arm</li>
-<li><strong>prog</strong> an indicator of disease progression (1), or censoring (0)</li>
-<li><strong>progyrs</strong> time from randomisation of disease progression or censoring</li>
-<li><strong>entry</strong> the time from the global start of study of the participant’s entry into the study</li>
+<li><strong>xoyrs</strong> the time from randomisation at which
+crossover happened, or 0 for participants in the Immediate arm</li>
+<li><strong>prog</strong> an indicator of disease progression (1), or
+censoring (0)</li>
+<li><strong>progyrs</strong> time from randomisation of disease
+progression or censoring</li>
+<li><strong>entry</strong> the time from the global start of study of
+the participant’s entry into the study</li>
 </ul>
 <p>The first six entries are:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(rpsftm)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">head</span>(immdef)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="co">#&gt;   id def imm censyrs xo    xoyrs prog  progyrs entry</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co">#&gt; 1  1   0   1       3  0 0.000000    0 3.000000     0</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="co">#&gt; 2  2   1   0       3  1 2.652797    0 3.000000     0</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="co">#&gt; 3  3   0   1       3  0 0.000000    1 1.737838     0</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="co">#&gt; 4  4   0   1       3  0 0.000000    1 2.166291     0</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="co">#&gt; 5  5   1   0       3  1 2.122100    1 2.884646     0</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="co">#&gt; 6  6   1   0       3  1 0.557392    0 3.000000     0</span></span></code></pre></div>
-<p>For example, subject 2 was randomised to the deferred arm, started treatment at 2.65 years and was censored at 3 years (the end of the study). Subject 3 was randomised to the immediate treatment arm and progressed (observed the event) at 1.74 years. Subject 5 was randomised to the deferred treatment arm, started treatment at 2.12 years and progressed at 2.88 years. The trial lasted 3 years with staggered entry over the first 1.5 years. The variable <strong>censyrs</strong> gives the time from entry to the end of the trial. The table below shows summary statistics for the <code>immdef</code> data:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">if</span>( <span class="kw">requireNamespace</span>(<span class="st">&quot;tableone&quot;</span>)){</span>
-<span id="cb2-2"><a href="#cb2-2"></a>  vars       &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;def&quot;</span>, <span class="st">&quot;imm&quot;</span>, <span class="st">&quot;censyrs&quot;</span>, <span class="st">&quot;xo&quot;</span>, <span class="st">&quot;xoyrs&quot;</span>, <span class="st">&quot;prog&quot;</span>, <span class="st">&quot;progyrs&quot;</span>, <span class="st">&quot;entry&quot;</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  factorVars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;def&quot;</span>, <span class="st">&quot;imm&quot;</span>, <span class="st">&quot;xo&quot;</span>, <span class="st">&quot;prog&quot;</span>) </span>
-<span id="cb2-4"><a href="#cb2-4"></a>  tableone<span class="op">::</span><span class="kw">CreateTableOne</span>(<span class="dt">vars=</span>vars, <span class="dt">data=</span>immdef, <span class="dt">factorVars=</span>factorVars, <span class="dt">includeNA=</span><span class="ot">FALSE</span>, <span class="dt">test=</span><span class="ot">FALSE</span>)</span>
-<span id="cb2-5"><a href="#cb2-5"></a>} <span class="cf">else</span>{</span>
-<span id="cb2-6"><a href="#cb2-6"></a>  <span class="kw">summary</span>(immdef)</span>
-<span id="cb2-7"><a href="#cb2-7"></a>}</span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="co">#&gt; Loading required namespace: tableone</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="co">#&gt;                      </span></span>
-<span id="cb2-10"><a href="#cb2-10"></a><span class="co">#&gt;                       Overall     </span></span>
-<span id="cb2-11"><a href="#cb2-11"></a><span class="co">#&gt;   n                   1000        </span></span>
-<span id="cb2-12"><a href="#cb2-12"></a><span class="co">#&gt;   def = 1 (%)          500 (50.0) </span></span>
-<span id="cb2-13"><a href="#cb2-13"></a><span class="co">#&gt;   imm = 1 (%)          500 (50.0) </span></span>
-<span id="cb2-14"><a href="#cb2-14"></a><span class="co">#&gt;   censyrs (mean (SD)) 2.25 (0.45) </span></span>
-<span id="cb2-15"><a href="#cb2-15"></a><span class="co">#&gt;   xo = 1 (%)           189 (18.9) </span></span>
-<span id="cb2-16"><a href="#cb2-16"></a><span class="co">#&gt;   xoyrs (mean (SD))   0.78 (0.93) </span></span>
-<span id="cb2-17"><a href="#cb2-17"></a><span class="co">#&gt;   prog = 1 (%)         312 (31.2) </span></span>
-<span id="cb2-18"><a href="#cb2-18"></a><span class="co">#&gt;   progyrs (mean (SD)) 1.93 (0.66) </span></span>
-<span id="cb2-19"><a href="#cb2-19"></a><span class="co">#&gt;   entry (mean (SD))   0.75 (0.45)</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(rpsftm)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">head</span>(immdef)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt;   id def imm censyrs xo    xoyrs prog  progyrs entry</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; 1  1   0   1       3  0 0.000000    0 3.000000     0</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; 2  2   1   0       3  1 2.652797    0 3.000000     0</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; 3  3   0   1       3  0 0.000000    1 1.737838     0</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; 4  4   0   1       3  0 0.000000    1 2.166291     0</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; 5  5   1   0       3  1 2.122100    1 2.884646     0</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; 6  6   1   0       3  1 0.557392    0 3.000000     0</span></span></code></pre></div>
+<p>For example, subject 2 was randomised to the deferred arm, started
+treatment at 2.65 years and was censored at 3 years (the end of the
+study). Subject 3 was randomised to the immediate treatment arm and
+progressed (observed the event) at 1.74 years. Subject 5 was randomised
+to the deferred treatment arm, started treatment at 2.12 years and
+progressed at 2.88 years. The trial lasted 3 years with staggered entry
+over the first 1.5 years. The variable <strong>censyrs</strong> gives
+the time from entry to the end of the trial. The table below shows
+summary statistics for the <code>immdef</code> data:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="cf">if</span>( <span class="fu">requireNamespace</span>(<span class="st">&quot;tableone&quot;</span>)){</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  vars       <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;def&quot;</span>, <span class="st">&quot;imm&quot;</span>, <span class="st">&quot;censyrs&quot;</span>, <span class="st">&quot;xo&quot;</span>, <span class="st">&quot;xoyrs&quot;</span>, <span class="st">&quot;prog&quot;</span>, <span class="st">&quot;progyrs&quot;</span>, <span class="st">&quot;entry&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  factorVars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;def&quot;</span>, <span class="st">&quot;imm&quot;</span>, <span class="st">&quot;xo&quot;</span>, <span class="st">&quot;prog&quot;</span>) </span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  tableone<span class="sc">::</span><span class="fu">CreateTableOne</span>(<span class="at">vars=</span>vars, <span class="at">data=</span>immdef, <span class="at">factorVars=</span>factorVars, <span class="at">includeNA=</span><span class="cn">FALSE</span>, <span class="at">test=</span><span class="cn">FALSE</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>} <span class="cf">else</span>{</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="fu">summary</span>(immdef)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>}</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: tableone</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt;                      </span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt;                       Overall     </span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt;   n                   1000        </span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt;   def = 1 (%)          500 (50.0) </span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt;   imm = 1 (%)          500 (50.0) </span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt;   censyrs (mean (SD)) 2.25 (0.45) </span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt;   xo = 1 (%)           189 (18.9) </span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt;   xoyrs (mean (SD))   0.78 (0.93) </span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;   prog = 1 (%)         312 (31.2) </span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;   progyrs (mean (SD)) 1.93 (0.66) </span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;   entry (mean (SD))   0.75 (0.45)</span></span></code></pre></div>
 </div>
 </div>
 <div id="fitting-the-rpsftm" class="section level2">
 <h2>Fitting the RPSFTM</h2>
-<p>We now show how to use <code>rpsftm</code> with the <code>immdef</code> data. First, a variable <strong>rx</strong> for the proportion of time spent on treatment must be created:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>rx &lt;-<span class="st"> </span><span class="kw">with</span>(immdef, <span class="dv">1</span> <span class="op">-</span><span class="st"> </span>xoyrs<span class="op">/</span>progyrs)</span></code></pre></div>
-<p>This sets <strong>rx</strong> to 1 in the immediate treatment arm (since no patients could switch to the deferred arm), 0 in the deferred arm patients that did not receive treatment and <strong>1 - xoyrs/progyrs</strong> in the deferred arm patients that did receive treatment. Using the default options, the fitted model is</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>rpsftm_fit_lr &lt;-<span class="st"> </span><span class="kw">rpsftm</span>(<span class="dt">formula=</span><span class="kw">Surv</span>(progyrs, prog) <span class="op">~</span><span class="st"> </span><span class="kw">rand</span>(imm, rx), </span>
-<span id="cb4-2"><a href="#cb4-2"></a>                        <span class="dt">data=</span>immdef, </span>
-<span id="cb4-3"><a href="#cb4-3"></a>                        <span class="dt">censor_time=</span>censyrs)</span></code></pre></div>
-<p>The above formula fits a RPSFTM where <code>progyrs</code> is the observed event time, <code>prog</code> is the indicator of disease progression, <code>imm</code> is the randomised treatment group indicator, <code>rx</code> is the proportion of time spent on treatment and <code>censyrs</code> is the censoring time. The log rank test is used in finding the point estimate of <span class="math inline">\(\psi\)</span>, <span class="math inline">\(\hat{\psi}\)</span>. Recensoring is performed since the <code>censor_time</code> parameter is specified; if not specified then recensoring would not be performed. After finding <span class="math inline">\(\hat{\psi}\)</span>, <code>rpsftm</code> refits the model at <span class="math inline">\(\hat{\psi}\)</span> and produces a <code>survdiff</code> object of the counter-factual event times to be used in plotting Kaplan-Meier curves. The function returns</p>
+<p>We now show how to use <code>rpsftm</code> with the
+<code>immdef</code> data. First, a variable <strong>rx</strong> for the
+proportion of time spent on treatment must be created:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>rx <span class="ot">&lt;-</span> <span class="fu">with</span>(immdef, <span class="dv">1</span> <span class="sc">-</span> xoyrs<span class="sc">/</span>progyrs)</span></code></pre></div>
+<p>This sets <strong>rx</strong> to 1 in the immediate treatment arm
+(since no patients could switch to the deferred arm), 0 in the deferred
+arm patients that did not receive treatment and <strong>1 -
+xoyrs/progyrs</strong> in the deferred arm patients that did receive
+treatment. Using the default options, the fitted model is</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>rpsftm_fit_lr <span class="ot">&lt;-</span> <span class="fu">rpsftm</span>(<span class="at">formula=</span><span class="fu">Surv</span>(progyrs, prog) <span class="sc">~</span> <span class="fu">rand</span>(imm, rx), </span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>                        <span class="at">data=</span>immdef, </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                        <span class="at">censor_time=</span>censyrs)</span></code></pre></div>
+<p>The above formula fits a RPSFTM where <code>progyrs</code> is the
+observed event time, <code>prog</code> is the indicator of disease
+progression, <code>imm</code> is the randomised treatment group
+indicator, <code>rx</code> is the proportion of time spent on treatment
+and <code>censyrs</code> is the censoring time. The log rank test is
+used in finding the point estimate of <span class="math inline">\(\psi\)</span>, <span class="math inline">\(\hat{\psi}\)</span>. Recensoring is performed
+since the <code>censor_time</code> parameter is specified; if not
+specified then recensoring would not be performed. After finding <span class="math inline">\(\hat{\psi}\)</span>, <code>rpsftm</code> refits
+the model at <span class="math inline">\(\hat{\psi}\)</span> and
+produces a <code>survdiff</code> object of the counter-factual event
+times to be used in plotting Kaplan-Meier curves. The function
+returns</p>
 <ul>
 <li><strong>psi</strong> the estimated parameter</li>
-<li><strong>fit</strong> a <code>survdiff</code> object to produce Kaplan-Meier curves of the estimated counter-factual event times in each treatment arm using <code>plot()</code></li>
-<li><strong>CI</strong> a vector of the confidence interval around <strong>psi</strong></li>
-<li><strong>Sstar</strong> the (possibly) recensored <code>Surv()</code> data using <strong>psi</strong></li>
-<li><strong>rand</strong> the <code>rand()</code> object used to specify the allocated and observed amount of treatment</li>
-<li><strong>ans</strong> the values from <code>uniroot.all</code> used to solve the estimating equation, but embedded within a list as per <code>uniroot</code>, with an extra element <code>root_all</code>, a vector of all roots found in the case of multiple solutions. The first element of <code>root_all</code> is subsequently used.</li>
-<li><strong>eval_z</strong> a data frame giving values of the Z-statistics at different values of <strong>psi</strong></li>
-<li>Further elements corresponding to either a <code>survdiff</code>, <code>coxph</code>, or <code>survreg</code> object. This will always include:
+<li><strong>fit</strong> a <code>survdiff</code> object to produce
+Kaplan-Meier curves of the estimated counter-factual event times in each
+treatment arm using <code>plot()</code></li>
+<li><strong>CI</strong> a vector of the confidence interval around
+<strong>psi</strong></li>
+<li><strong>Sstar</strong> the (possibly) recensored <code>Surv()</code>
+data using <strong>psi</strong></li>
+<li><strong>rand</strong> the <code>rand()</code> object used to specify
+the allocated and observed amount of treatment</li>
+<li><strong>ans</strong> the values from <code>uniroot.all</code> used
+to solve the estimating equation, but embedded within a list as per
+<code>uniroot</code>, with an extra element <code>root_all</code>, a
+vector of all roots found in the case of multiple solutions. The first
+element of <code>root_all</code> is subsequently used.</li>
+<li><strong>eval_z</strong> a data frame giving values of the
+Z-statistics at different values of <strong>psi</strong></li>
+<li>Further elements corresponding to either a <code>survdiff</code>,
+<code>coxph</code>, or <code>survreg</code> object. This will always
+include:
 <ul>
 <li><strong>call</strong> the R call object</li>
-<li><strong>formula</strong> a formula representing any adjustments, strata or clusters used</li>
-<li><strong>terms</strong>_ a more detailed representation of the model formula</li>
+<li><strong>formula</strong> a formula representing any adjustments,
+strata or clusters used</li>
+<li><strong>terms</strong>_ a more detailed representation of the model
+formula</li>
 </ul></li>
 </ul>
-<p>The point estimate and 95% confidence interval can be returned using <code>rpsftm_fit_lr$psi</code> and <code>rpsftm_fit_lr$CI</code> which gives <span class="math inline">\(\hat{\psi} = -0.181 (-0.35, 0.00229)\)</span>. The function <code>plot()</code> produces Kaplan-Meier curves of the counter-factual event times in each group and can be used to check that the distributions are indeed the same at <span class="math inline">\(\hat{\psi}\)</span>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">library</span>(ggplot2)</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">plot</span>(rpsftm_fit_lr)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The point estimate and 95% confidence interval can be returned using
+<code>rpsftm_fit_lr$psi</code> and <code>rpsftm_fit_lr$CI</code> which
+gives <span class="math inline">\(\hat{\psi} = -0.181 (-0.35,
+0.00229)\)</span>. The function <code>plot()</code> produces
+Kaplan-Meier curves of the counter-factual event times in each group and
+can be used to check that the distributions are indeed the same at <span class="math inline">\(\hat{\psi}\)</span>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">plot</span>(rpsftm_fit_lr)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 <!-- COXPH-->
-<p>We now provide examples of using the Cox regression model and the Weibull model in place of the log rank test. To use the Wald test from a Cox regression model, we specify <code>test=coxph</code> in the function parameters. Covariates can also be included in the estimation procedure by adding them to the right hand side of the formula. For example, baseline covariates that are included in the intention-to-treat analysis may also be incorporated into the estimation procedure of the RPSFTM. In the following example we add entry time as a covariate and use <code>summary()</code> to find the value of <span class="math inline">\(\hat{\psi}\)</span> and its 95% confidence interval:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>rpsftm_fit_cph &lt;-<span class="st"> </span><span class="kw">rpsftm</span>(<span class="dt">formula=</span><span class="kw">Surv</span>(progyrs, prog) <span class="op">~</span><span class="st"> </span><span class="kw">rand</span>(imm, rx) <span class="op">+</span><span class="st"> </span>entry, </span>
-<span id="cb6-2"><a href="#cb6-2"></a>                         <span class="dt">data=</span>immdef, </span>
-<span id="cb6-3"><a href="#cb6-3"></a>                         <span class="dt">censor_time=</span>censyrs,</span>
-<span id="cb6-4"><a href="#cb6-4"></a>                         <span class="dt">test=</span>coxph)</span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="kw">summary</span>(rpsftm_fit_cph)</span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="co">#&gt;   arm   rx.Min. rx.1st Qu. rx.Median   rx.Mean rx.3rd Qu.   rx.Max.</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="co">#&gt; 1   0 0.0000000  0.0000000 0.0000000 0.1574062  0.2547779 0.9770941</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="co">#&gt; 2   1 1.0000000  1.0000000 1.0000000 1.0000000  1.0000000 1.0000000</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="co">#&gt;   n= 1000, number of events= 286</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="co">#&gt; </span></span>
-<span id="cb6-11"><a href="#cb6-11"></a><span class="co">#&gt;         coef exp(coef) se(coef)     z Pr(&gt;|z|)</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a><span class="co">#&gt; entry 0.1235    1.1315   0.1487 0.831    0.406</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a><span class="co">#&gt; </span></span>
-<span id="cb6-14"><a href="#cb6-14"></a><span class="co">#&gt;       exp(coef) exp(-coef) lower .95 upper .95</span></span>
-<span id="cb6-15"><a href="#cb6-15"></a><span class="co">#&gt; entry     1.131     0.8838    0.8454     1.514</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a><span class="co">#&gt; </span></span>
-<span id="cb6-17"><a href="#cb6-17"></a><span class="co">#&gt; Concordance= 0.514  (se = 0.018 )</span></span>
-<span id="cb6-18"><a href="#cb6-18"></a><span class="co">#&gt; </span></span>
-<span id="cb6-19"><a href="#cb6-19"></a><span class="co">#&gt; psi: -0.1810615</span></span>
-<span id="cb6-20"><a href="#cb6-20"></a><span class="co">#&gt; exp(psi): 0.8343841</span></span>
-<span id="cb6-21"><a href="#cb6-21"></a><span class="co">#&gt; Confidence Interval, psi -0.3498529 0.003030102</span></span>
-<span id="cb6-22"><a href="#cb6-22"></a><span class="co">#&gt; Confidence Interval, exp(psi)  0.7047918 1.003035</span></span></code></pre></div>
-<p>From the output we get <span class="math inline">\(\hat{\psi} = -0.181 (-0.35, 0.00303)\)</span>. Again, we can plot the Kaplan-Meier curves of the counter-factual event times in each group:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">plot</span>(rpsftm_fit_cph)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>We now provide examples of using the Cox regression model and the
+Weibull model in place of the log rank test. To use the Wald test from a
+Cox regression model, we specify <code>test=coxph</code> in the function
+parameters. Covariates can also be included in the estimation procedure
+by adding them to the right hand side of the formula. For example,
+baseline covariates that are included in the intention-to-treat analysis
+may also be incorporated into the estimation procedure of the RPSFTM. In
+the following example we add entry time as a covariate and use
+<code>summary()</code> to find the value of <span class="math inline">\(\hat{\psi}\)</span> and its 95% confidence
+interval:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>rpsftm_fit_cph <span class="ot">&lt;-</span> <span class="fu">rpsftm</span>(<span class="at">formula=</span><span class="fu">Surv</span>(progyrs, prog) <span class="sc">~</span> <span class="fu">rand</span>(imm, rx) <span class="sc">+</span> entry, </span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                         <span class="at">data=</span>immdef, </span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                         <span class="at">censor_time=</span>censyrs,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>                         <span class="at">test=</span>coxph)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">summary</span>(rpsftm_fit_cph)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;   arm   rx.Min. rx.1st Qu. rx.Median   rx.Mean rx.3rd Qu.   rx.Max.</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; 1   0 0.0000000  0.0000000 0.0000000 0.1574062  0.2547779 0.9770941</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; 2   1 1.0000000  1.0000000 1.0000000 1.0000000  1.0000000 1.0000000</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;   n= 1000, number of events= 286</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;         coef exp(coef) se(coef)     z Pr(&gt;|z|)</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; entry 0.1235    1.1315   0.1487 0.831    0.406</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;       exp(coef) exp(-coef) lower .95 upper .95</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; entry     1.131     0.8838    0.8454     1.514</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; Concordance= 0.514  (se = 0.018 )</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; psi: -0.1810615</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; exp(psi): 0.8343841</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; Confidence Interval, psi -0.3498529 0.003030102</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; Confidence Interval, exp(psi)  0.7047918 1.003035</span></span></code></pre></div>
+<p>From the output we get <span class="math inline">\(\hat{\psi} =
+-0.181 (-0.35, 0.00303)\)</span>. Again, we can plot the Kaplan-Meier
+curves of the counter-factual event times in each group:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">plot</span>(rpsftm_fit_cph)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 <!--SURVREG-->
 <p>Similarly, for the Weibull model we have:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>rpsftm_fit_wb &lt;-<span class="st"> </span><span class="kw">rpsftm</span>(<span class="dt">formula=</span><span class="kw">Surv</span>(progyrs, prog) <span class="op">~</span><span class="st"> </span><span class="kw">rand</span>(imm, rx) <span class="op">+</span><span class="st"> </span>entry, </span>
-<span id="cb8-2"><a href="#cb8-2"></a>                        <span class="dt">data=</span>immdef, </span>
-<span id="cb8-3"><a href="#cb8-3"></a>                        <span class="dt">censor_time=</span>censyrs,</span>
-<span id="cb8-4"><a href="#cb8-4"></a>                        <span class="dt">test=</span>survreg)</span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="kw">summary</span>(rpsftm_fit_wb)</span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt;   arm   rx.Min. rx.1st Qu. rx.Median   rx.Mean rx.3rd Qu.   rx.Max.</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; 1   0 0.0000000  0.0000000 0.0000000 0.1574062  0.2547779 0.9770941</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; 2   1 1.0000000  1.0000000 1.0000000 1.0000000  1.0000000 1.0000000</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt; </span></span>
-<span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; rpsftm(formula = Surv(progyrs, prog) ~ rand(imm, rx) + entry, </span></span>
-<span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt;     data = immdef, censor_time = censyrs, test = survreg)</span></span>
-<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt;               Value Std. Error      z        p</span></span>
-<span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; (Intercept)  1.3879     0.0857 16.196 5.40e-59</span></span>
-<span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt; entry       -0.0582     0.0906 -0.642 5.21e-01</span></span>
-<span id="cb8-16"><a href="#cb8-16"></a><span class="co">#&gt; Log(scale)  -0.4177     0.0568 -7.351 1.97e-13</span></span>
-<span id="cb8-17"><a href="#cb8-17"></a><span class="co">#&gt; </span></span>
-<span id="cb8-18"><a href="#cb8-18"></a><span class="co">#&gt; Scale= 0.659 </span></span>
-<span id="cb8-19"><a href="#cb8-19"></a><span class="co">#&gt; </span></span>
-<span id="cb8-20"><a href="#cb8-20"></a><span class="co">#&gt; Weibull distribution</span></span>
-<span id="cb8-21"><a href="#cb8-21"></a><span class="co">#&gt; Loglik(model)= -759.7   Loglik(intercept only)= -759.9</span></span>
-<span id="cb8-22"><a href="#cb8-22"></a><span class="co">#&gt; Number of Newton-Raphson Iterations: 6 </span></span>
-<span id="cb8-23"><a href="#cb8-23"></a><span class="co">#&gt; n= 1000 </span></span>
-<span id="cb8-24"><a href="#cb8-24"></a><span class="co">#&gt; </span></span>
-<span id="cb8-25"><a href="#cb8-25"></a><span class="co">#&gt; </span></span>
-<span id="cb8-26"><a href="#cb8-26"></a><span class="co">#&gt; psi: -0.1813763</span></span>
-<span id="cb8-27"><a href="#cb8-27"></a><span class="co">#&gt; exp(psi): 0.8341214</span></span>
-<span id="cb8-28"><a href="#cb8-28"></a><span class="co">#&gt; Confidence Interval, psi -0.3499628 0.005170935</span></span>
-<span id="cb8-29"><a href="#cb8-29"></a><span class="co">#&gt; Confidence Interval, exp(psi)  0.7047143 1.005184</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">plot</span>(rpsftm_fit_wb)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>The output shows that <span class="math inline">\(\hat{\psi} = -0.181 (-0.35, 0.00517)\)</span>. In all three cases, the point estimate and 95% confidence interval of <span class="math inline">\(\psi\)</span> are similar.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>rpsftm_fit_wb <span class="ot">&lt;-</span> <span class="fu">rpsftm</span>(<span class="at">formula=</span><span class="fu">Surv</span>(progyrs, prog) <span class="sc">~</span> <span class="fu">rand</span>(imm, rx) <span class="sc">+</span> entry, </span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>                        <span class="at">data=</span>immdef, </span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                        <span class="at">censor_time=</span>censyrs,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                        <span class="at">test=</span>survreg)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">summary</span>(rpsftm_fit_wb)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt;   arm   rx.Min. rx.1st Qu. rx.Median   rx.Mean rx.3rd Qu.   rx.Max.</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; 1   0 0.0000000  0.0000000 0.0000000 0.1574062  0.2547779 0.9770941</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; 2   1 1.0000000  1.0000000 1.0000000 1.0000000  1.0000000 1.0000000</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; rpsftm(formula = Surv(progyrs, prog) ~ rand(imm, rx) + entry, </span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt;     data = immdef, censor_time = censyrs, test = survreg)</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt;               Value Std. Error      z        p</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; (Intercept)  1.3879     0.0857 16.196 5.40e-59</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; entry       -0.0582     0.0906 -0.642 5.21e-01</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; Log(scale)  -0.4177     0.0568 -7.351 1.97e-13</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; Scale= 0.659 </span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; Weibull distribution</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; Loglik(model)= -759.7   Loglik(intercept only)= -759.9</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; Number of Newton-Raphson Iterations: 6 </span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; n= 1000 </span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; psi: -0.1813763</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; exp(psi): 0.8341214</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; Confidence Interval, psi -0.3499628 0.005170935</span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; Confidence Interval, exp(psi)  0.7047143 1.005184</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">plot</span>(rpsftm_fit_wb)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The output shows that <span class="math inline">\(\hat{\psi} = -0.181
+(-0.35, 0.00517)\)</span>. In all three cases, the point estimate and
+95% confidence interval of <span class="math inline">\(\psi\)</span> are
+similar.</p>
 <div id="checking-the-search-interval" class="section level3">
 <h3>Checking the search interval</h3>
-<p>There are two instances where <code>rpsftm</code> will produce warning messages due to the search interval. The function first evaluates <span class="math inline">\(Z(\psi)\)</span> at <span class="math inline">\(\psi =\)</span> <code>low_psi</code>, <code>hi_psi</code> and will produce a warning message if <span class="math inline">\(Z(\psi)\)</span> is the same sign at these two points.</p>
+<p>There are two instances where <code>rpsftm</code> will produce
+warning messages due to the search interval. The function first
+evaluates <span class="math inline">\(Z(\psi)\)</span> at <span class="math inline">\(\psi =\)</span> <code>low_psi</code>,
+<code>hi_psi</code> and will produce a warning message if <span class="math inline">\(Z(\psi)\)</span> is the same sign at these two
+points.</p>
 <pre><code>#&gt; Warning in rpsftm(formula = Surv(progyrs, prog) ~ rand(imm, rx), data = immdef, : 
 #&gt; The starting interval (1, 2) to search for a solution for psi
 #&gt; gives values of the same sign (-8.95, -12.3).
 #&gt; Try a wider interval. plot(obj$eval_z, type=&quot;s&quot;), where obj is the output of rpsftm()
 #&gt; Warning in rpsftm(formula = Surv(progyrs, prog) ~ rand(imm, rx), data =
-#&gt; immdef, : Evaluation of the estimated values of psi failed. It is set to NA
+#&gt; immdef, : Evaluation of the estimated values of psi failed. It is set to
+#&gt; NA
 #&gt; Warning in rpsftm(formula = Surv(progyrs, prog) ~ rand(imm, rx), data =
-#&gt; immdef, : Evaluation of a limit of the Confidence Interval failed. It is
+#&gt; immdef, : Evaluation of a limit of the Confidence Interval failed.  It is
 #&gt; set to NA
 #&gt;   arm   rx.Min. rx.1st Qu. rx.Median   rx.Mean rx.3rd Qu.   rx.Max.
 #&gt; 1   0 0.0000000  0.0000000 0.0000000 0.1574062  0.2547779 0.9770941
 #&gt; 2   1 1.0000000  1.0000000 1.0000000 1.0000000  1.0000000 1.0000000
 #&gt; Fitting failed. yes</code></pre>
-<p>This suggests widening the search interval via trial and error until the values of <span class="math inline">\(Z(\psi)\)</span> at <code>low_psi</code> and <code>hi_psi</code> are of opposite sign. The second warning message occurs when <code>uniroot</code> , the function used to search the interval (<code>low_psi</code>, <code>hi_psi</code>) for <span class="math inline">\(\hat{\psi}\)</span> and its 95% confidence interval, fails to find any one of these. It will set the value to NA and produce the following warning message</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>rpsftm_fit &lt;-<span class="st"> </span><span class="kw">rpsftm</span>(<span class="dt">formula=</span><span class="kw">Surv</span>(progyrs, prog) <span class="op">~</span><span class="st"> </span><span class="kw">rand</span>(imm, rx),</span>
-<span id="cb11-2"><a href="#cb11-2"></a>                     <span class="dt">data=</span>immdef, </span>
-<span id="cb11-3"><a href="#cb11-3"></a>                     <span class="dt">censor_time=</span>censyrs,</span>
-<span id="cb11-4"><a href="#cb11-4"></a>                     <span class="dt">low_psi=</span><span class="op">-</span><span class="dv">1</span>, </span>
-<span id="cb11-5"><a href="#cb11-5"></a>                     <span class="dt">hi_psi=</span><span class="op">-</span><span class="fl">0.1</span>)</span>
-<span id="cb11-6"><a href="#cb11-6"></a><span class="co">#&gt; Warning in rpsftm(formula = Surv(progyrs, prog) ~ rand(imm, rx), data =</span></span>
-<span id="cb11-7"><a href="#cb11-7"></a><span class="co">#&gt; immdef, : Evaluation of a limit of the Confidence Interval failed. It is</span></span>
-<span id="cb11-8"><a href="#cb11-8"></a><span class="co">#&gt; set to NA</span></span></code></pre></div>
-<p>Investigation of a plot of <span class="math inline">\(Z(\psi)\)</span> against <span class="math inline">\(\psi\)</span> (example shown below) for a range of values of <span class="math inline">\(\psi\)</span> could show why the functions fails to find a root. The fitted object, <code>rpsftm_fit</code>, returns a data frame (<code>rpsftm_fit$eval_z</code>) with values of the Z-statistic evaluated at 100 points between the limits of the search interval. It is therefore straightforward to plot <span class="math inline">\(Z(\psi)\)</span> against <span class="math inline">\(\psi\)</span></p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">plot</span>(rpsftm_fit<span class="op">$</span>eval_z, <span class="dt">type=</span><span class="st">&quot;s&quot;</span>, <span class="dt">ylim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">6</span>))</span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">abline</span>(<span class="dt">h=</span><span class="kw">qnorm</span>(<span class="kw">c</span>(<span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span>)))</span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="kw">abline</span>(<span class="dt">v=</span>rpsftm_fit<span class="op">$</span>psi)</span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="kw">abline</span>(<span class="dt">v=</span>rpsftm_fit<span class="op">$</span>CI)</span></code></pre></div>
+<p>This suggests widening the search interval via trial and error until
+the values of <span class="math inline">\(Z(\psi)\)</span> at
+<code>low_psi</code> and <code>hi_psi</code> are of opposite sign. The
+second warning message occurs when <code>uniroot</code> , the function
+used to search the interval (<code>low_psi</code>, <code>hi_psi</code>)
+for <span class="math inline">\(\hat{\psi}\)</span> and its 95%
+confidence interval, fails to find any one of these. It will set the
+value to NA and produce the following warning message</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>rpsftm_fit <span class="ot">&lt;-</span> <span class="fu">rpsftm</span>(<span class="at">formula=</span><span class="fu">Surv</span>(progyrs, prog) <span class="sc">~</span> <span class="fu">rand</span>(imm, rx),</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>                     <span class="at">data=</span>immdef, </span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>                     <span class="at">censor_time=</span>censyrs,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>                     <span class="at">low_psi=</span><span class="sc">-</span><span class="dv">1</span>, </span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>                     <span class="at">hi_psi=</span><span class="sc">-</span><span class="fl">0.1</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; Warning in rpsftm(formula = Surv(progyrs, prog) ~ rand(imm, rx), data =</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; immdef, : Evaluation of a limit of the Confidence Interval failed.  It is</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; set to NA</span></span></code></pre></div>
+<p>Investigation of a plot of <span class="math inline">\(Z(\psi)\)</span> against <span class="math inline">\(\psi\)</span> (example shown below) for a range of
+values of <span class="math inline">\(\psi\)</span> could show why the
+functions fails to find a root. The fitted object,
+<code>rpsftm_fit</code>, returns a data frame
+(<code>rpsftm_fit$eval_z</code>) with values of the Z-statistic
+evaluated at 100 points between the limits of the search interval. It is
+therefore straightforward to plot <span class="math inline">\(Z(\psi)\)</span> against <span class="math inline">\(\psi\)</span></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">plot</span>(rpsftm_fit<span class="sc">$</span>eval_z, <span class="at">type=</span><span class="st">&quot;s&quot;</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">6</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fu">qnorm</span>(<span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span>)))</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>rpsftm_fit<span class="sc">$</span>psi)</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>rpsftm_fit<span class="sc">$</span>CI)</span></code></pre></div>
 <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkAAAAGACAMAAAByRC0tAAAABlBMVEUAAAD///+l2Z/dAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAI+klEQVR4nO3d4WLithZGUXj/l+6kyUwIscHmk8yRtdaP29w2yB6dXWOYlLlcIXB59wkwNgERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREJHGAV04iXcF1Ha5h4fa88scSI2JTBDQGw53iBoTEdCwakxEQMOqMZFeAX18+6N7j6MDOuF90KkDuvx9xNrD3jBNAfVYrk9A//pZfZyAYlMGtP/tg3YE1GM5V6BhnTmgmvdAJ7uTPnVA12fPVO8apIAaLzfJ+0Dfxz3PVajGRGYL6N3HbqjGRKYM6BxXoRoTmTGgCsdvoMZEpg1o/MtQjYnMGtD/SpzEy2pMZO6A3ve2eAM1JjJ1QH+NGVGNiQjoS7kTeqrGRAT05Z2/zfuaGhMR0L26Z3anxkQEdK/umd2pMREB3at7ZndqTERA94a5D6oxEQEtqX12X2pMREBLhrgK1ZiIgNaUP8MaExHQmvJnWGMiAlpT/gxrTERAa8q/LV1jIgJ6qPJp1piIgB6qfBWqMREBPVX1VGtMREBPVT3VGhMR0FNVT7XGRAT0VNX7oBoTEdAmFU+3xkQEtEnF060xEQFtUvF0a0xEQJtU/InpGhMR0D6FzrvGRAS0T6GrUI2JCGi/IudeYyIC2q/IVajGRAT0mgLnX2MiAnrNa3/kUdtTKLGcgBp4T0Q1JiKgRgTUZ/2Dlnu/45/LakxEQC0JqPn6By1XhIAar7/+oJMGdOTT2JkDev4S95wBfRBQi/Uvzx4koGoHqhXQ17f/elDFH4to7LC3GM8d0PX/vZvxCvSDgIL1LwLqeld9+oD+PGT6gD4I6OX1H/zLN1NAnW6IaiznjcTj1N5CAZXX+CpUYyICOpaAGpk2oHb3QzUmIqD3EFBo+oDyy1CNiQjojQT0OgFdBZQQ0FVACQFd0zeGakxEQG8moM7HPbvXr0I1JiKgAgTU8bgzEFDH485AQB2POwMBdTzuDATU8bgzEFDH485AQB2POwMBdTzuDATU8bgzeO2/26gxEQFVIqD2x52KgNofdyoCan/cqey6D6oxkcFOdwKDTWSw053A5s8XqjERAZX2KKIaExFQeQI6YLkzE9ABy53Z2tNYjYkIaAgC6rzc2S29JKsxEQGN4y6iGhMR0FgE1Ge5aQioz3LTuHkaqzERAY3n6466xkT2BtTqEiqg0LABXe7/zsq3P7nQCijU/JPLD7sC/TvtZ79T/PmNAuql8TXowKew5zdxv7/55eOyZtyAHl9bbv/R5f67Jvjzwg4zcEAPry0/Vl39RV44idcCuj55GfldkKewXoa+Al3X07j7PgH1MmZA+REbPJgPl7Yv5b0TPZvLzf82W67fwwRUzVdAu+9mHy7X72ECqqbxz5cJaDYCIiIgIgIich9QeCMtoNksbKGA2E5ARAREREBEBEREQEQERERARAREZCmg4N1oAc2m8Q8LC2g2AiKyFtCLP6IooNk820IB8dDTgPZdhQQ0my1bKCBWCYiIgIhsCmj7SzIBzWbXFgqIewIiIiAi+wJ6eh8koNns3sLHEQloNi9toYD4S0BEXgto9WlMQLN5eQsFxAcBEREQkdcDWrwREtBssi38FZGAZpNvYeWAnv0UgYBiDQK6/WGPWgFdfn0RLceChltYLqDL4pcvL8eSlgG9/mHlBwf08h8qRFXHBvTacizp8LJmVxE7z8I9UDWdXhfXCMirsP7OHdDBy82oV0D7nscENKyeExHQBLoGtPkqJKBh9Z6IgE5OQEQERKR7QJvugwQ0rCMm8jwiAQ3rqIkI6KQERERARARE5LCA2vyuuICqOXQiAjofARE5NqC1pzEBDevwiQjoXARE5PiAlp7GBDSst0xEQOchICI1JiKgYdWYiICGVWMiAhpWjYkIaFg1JiKgYdWYiICGVWMiAhpWjYkIaFg1JiKgYdWYiICGVWMiAhpWjYkIaFg1JiKgYdWYiICGVWMiAhpWjYkIaFg1JtIroH8/PbvyOAHFTh3Qx3d/JiSgXs4c0M3VR0C9TBDQx18F1MsMAf35QkC9nDmgm4LWAuIk+gR0ew1a7mbfcvx26ivQ0cvNqMZEBDSsGhPpG9D6gwQUExARAREREJEZAjpsuRnVmMjbAuIk3hTQwetb/T2rH3igkbfJ6gUONPI2Wb3AgUbeJqsXONDI22T1AgcaeZusXuBAI2+T1QscaORtsnqBA428TVavdCDOSUBEBEREQEQERERARAREREBEBEREQEQERERARAREpGdAN2vv+O9ENq59Ocnq19YzuD/3zpeIjsvfnPql9ZF+LDjy6tfr6od1NVi9+bkvH6/Xyj9+HU0P9WPBkVe//tin1qs3P/fVA/ZZ+EQBNXR3upe2h1jYjEEDuh4WUPML9V1AjW8jBLR/7d5PAz1HfOmaZ9/4f33dwRkC6nwFuj1Ul9UF9Gzt8e+BOq3e/i7314qd++mw/vdbDz0C+ly914iPXn3vZ6nsW/3nV524Ar119daLL9yid3ZIQM3vUn4uOPLq1/v/03T1/v0cENDnfWKv3w4YfvVr6xncrN7wCXL9cF1X5/QERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAT0Mlv3wS4QERARAW31/XGtXx+ZYus+2IWt/kXz+aFBtu6TXdjq+2ObfvyN2dmFrQS0yC5s9f2xdO6BbtiFrX59rqGt+2AXthLQIruwlVdhi+zCVt4HWmQXtrJTi2zLVnZqkW3Zyk4tsi1EBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQEQERERARAREREBEBEREQET+A5Z9T9NoYgyYAAAAAElFTkSuQmCC" /><!-- --></p>
-<p>In this case, we see that the search interval used in <code>rpsftm</code> was not wide enough to find the upper confidence limit. The plot can also be used to check for multiple roots as <code>uniroot</code> will only return one root.</p>
+<p>In this case, we see that the search interval used in
+<code>rpsftm</code> was not wide enough to find the upper confidence
+limit. The plot can also be used to check for multiple roots as
+<code>uniroot</code> will only return one root.</p>
 </div>
 </div>
 <div id="methods" class="section level2">
 <h2>Methods</h2>
 <div id="rpsftm-assumptions" class="section level3">
 <h3>RPSFTM assumptions</h3>
-<p>Let <span class="math inline">\(T_i = T_i^{off} + T_i^{on}\)</span> be the observed event time for subject <span class="math inline">\(i\)</span>, where <span class="math inline">\(T_i^{off}\)</span> and <span class="math inline">\(T_i^{on}\)</span> are the time that the patient spent off and on treatment, respectively. The <span class="math inline">\(T_i\)</span> are related to the counter-factual or treatment-free event times <span class="math inline">\(U_i\)</span> by the causal model <span class="math display">\[
+<p>Let <span class="math inline">\(T_i = T_i^{off} + T_i^{on}\)</span>
+be the observed event time for subject <span class="math inline">\(i\)</span>, where <span class="math inline">\(T_i^{off}\)</span> and <span class="math inline">\(T_i^{on}\)</span> are the time that the patient
+spent off and on treatment, respectively. The <span class="math inline">\(T_i\)</span> are related to the counter-factual or
+treatment-free event times <span class="math inline">\(U_i\)</span> by
+the causal model <span class="math display">\[
 U_i = T_i^{off} + T_i^{on}\exp(\psi_0)
-\]</span> where <span class="math inline">\(\exp(-\psi_0)\)</span> is the acceleration factor associated with treatment and <span class="math inline">\(\psi_0\)</span> is the true causal parameter.</p>
-<p>To estimate <span class="math inline">\(\psi\)</span> we assume that the <span class="math inline">\(U_i\)</span> are independent of randomised treatment group <span class="math inline">\(R\)</span>, i.e. if the groups are similar with respect to all other characteristics except treatment, the average event times should be the same in each group if no individual were treated. A g-estimation procedure is used to find the value of <span class="math inline">\(\psi\)</span> such that <span class="math inline">\(U\)</span> is independent of <span class="math inline">\(R\)</span>. For each value of <span class="math inline">\(\psi\)</span> considered, the hypothesis <span class="math inline">\(\psi_0 = \psi\)</span> is tested by computing <span class="math inline">\(U_i(\psi)\)</span> and calculating <span class="math inline">\(Z(\psi)\)</span> as the test statistic. This is usually the same test statistic as for the intention-to-treat analysis. In the <code>rpsftm</code> function, the test options are log rank (default), Cox, and Weibull. For the parametric Weibull test, the point estimate (<span class="math inline">\(\hat{\psi}\)</span>) is the value of <span class="math inline">\(\psi\)</span> for which <span class="math inline">\(Z(\psi) = 0\)</span>. For the non-parametric tests (log rank, Cox), <span class="math inline">\(\hat{\psi}\)</span> is the value of <span class="math inline">\(\psi\)</span> for which <span class="math inline">\(Z(\psi)\)</span> crosses 0, since <span class="math inline">\(Z(\psi)\)</span> is a step function. Confidence intervals are similarly found with the <span class="math inline">\(100(1-\alpha)\%\)</span> confidence interval being the set <span class="math inline">\(\{\psi: |Z(\psi)| &lt; z_{1-\alpha/2}\}\)</span>, where <span class="math inline">\(z_{1-\alpha/2}\)</span> is the <span class="math inline">\(1-\alpha/2\)</span> percentile of the standard normal distribution.</p>
-<p>As well as assuming that the only difference between randomised groups is the treatment received, the RPSFTM also assumes a ‘common treatment effect’. The common treatment effect assumption states that the treatment effect is the same for all individuals (with respect to time spent on treatment) regardless of when treatment is received.</p>
+\]</span> where <span class="math inline">\(\exp(-\psi_0)\)</span> is
+the acceleration factor associated with treatment and <span class="math inline">\(\psi_0\)</span> is the true causal parameter.</p>
+<p>To estimate <span class="math inline">\(\psi\)</span> we assume that
+the <span class="math inline">\(U_i\)</span> are independent of
+randomised treatment group <span class="math inline">\(R\)</span>,
+i.e. if the groups are similar with respect to all other characteristics
+except treatment, the average event times should be the same in each
+group if no individual were treated. A g-estimation procedure is used to
+find the value of <span class="math inline">\(\psi\)</span> such that
+<span class="math inline">\(U\)</span> is independent of <span class="math inline">\(R\)</span>. For each value of <span class="math inline">\(\psi\)</span> considered, the hypothesis <span class="math inline">\(\psi_0 = \psi\)</span> is tested by computing
+<span class="math inline">\(U_i(\psi)\)</span> and calculating <span class="math inline">\(Z(\psi)\)</span> as the test statistic. This is
+usually the same test statistic as for the intention-to-treat analysis.
+In the <code>rpsftm</code> function, the test options are log rank
+(default), Cox, and Weibull. For the parametric Weibull test, the point
+estimate (<span class="math inline">\(\hat{\psi}\)</span>) is the value
+of <span class="math inline">\(\psi\)</span> for which <span class="math inline">\(Z(\psi) = 0\)</span>. For the non-parametric tests
+(log rank, Cox), <span class="math inline">\(\hat{\psi}\)</span> is the
+value of <span class="math inline">\(\psi\)</span> for which <span class="math inline">\(Z(\psi)\)</span> crosses 0, since <span class="math inline">\(Z(\psi)\)</span> is a step function. Confidence
+intervals are similarly found with the <span class="math inline">\(100(1-\alpha)\%\)</span> confidence interval being
+the set <span class="math inline">\(\{\psi: |Z(\psi)| &lt;
+z_{1-\alpha/2}\}\)</span>, where <span class="math inline">\(z_{1-\alpha/2}\)</span> is the <span class="math inline">\(1-\alpha/2\)</span> percentile of the standard
+normal distribution.</p>
+<p>As well as assuming that the only difference between randomised
+groups is the treatment received, the RPSFTM also assumes a ‘common
+treatment effect’. The common treatment effect assumption states that
+the treatment effect is the same for all individuals (with respect to
+time spent on treatment) regardless of when treatment is received.</p>
 </div>
 <div id="recensoring" class="section level3">
 <h3>Recensoring</h3>
-<p>The censoring indicators of the observed event times are initially carried over to the counter-factual event times. However, the uninformative censoring on the <span class="math inline">\(T_i\)</span> scale may be informative on the <span class="math inline">\(U_i\)</span> scale. Suppose we have two individuals with the same <span class="math inline">\(U_i\)</span>, one of whom receives the superior treatment. The individual receiving the superior treatment has their <span class="math inline">\(U_i\)</span> extended so that they are censored whilst the other individual may observe the event. Therefore, on the <span class="math inline">\(U_i\)</span> scale, censoring is informative with respect to treatment group. To overcome this problem, the counter-factual event times are recensored by the minimum <span class="math inline">\(U_i\)</span> that could have been observed for each individual across their possible treatment changes.</p>
-<p>Let <span class="math inline">\(C_i\)</span> be the potential censoring time for an individual <span class="math inline">\(i\)</span>. An individual is then recensored at the minimum possible censoring time: <span class="math display">\[
-D_i^*(\psi) = min(C_i, C_i\exp(\psi)). 
-\]</span> If <span class="math inline">\(D_i^*(\psi) &lt; U_i\)</span>, then <span class="math inline">\(U_i\)</span> is replaced by <span class="math inline">\(D_i^*\)</span> and the censoring indicator is replaced by 0. For treatment arms where switching does not occur, there can be no informative censoring and so recensoring is not applied.</p>
+<p>The censoring indicators of the observed event times are initially
+carried over to the counter-factual event times. However, the
+uninformative censoring on the <span class="math inline">\(T_i\)</span>
+scale may be informative on the <span class="math inline">\(U_i\)</span>
+scale. Suppose we have two individuals with the same <span class="math inline">\(U_i\)</span>, one of whom receives the superior
+treatment. The individual receiving the superior treatment has their
+<span class="math inline">\(U_i\)</span> extended so that they are
+censored whilst the other individual may observe the event. Therefore,
+on the <span class="math inline">\(U_i\)</span> scale, censoring is
+informative with respect to treatment group. To overcome this problem,
+the counter-factual event times are recensored by the minimum <span class="math inline">\(U_i\)</span> that could have been observed for
+each individual across their possible treatment changes.</p>
+<p>Let <span class="math inline">\(C_i\)</span> be the potential
+censoring time for an individual <span class="math inline">\(i\)</span>.
+An individual is then recensored at the minimum possible censoring time:
+<span class="math display">\[
+D_i^*(\psi) = min(C_i, C_i\exp(\psi)).
+\]</span> If <span class="math inline">\(D_i^*(\psi) &lt; U_i\)</span>,
+then <span class="math inline">\(U_i\)</span> is replaced by <span class="math inline">\(D_i^*\)</span> and the censoring indicator is
+replaced by 0. For treatment arms where switching does not occur, there
+can be no informative censoring and so recensoring is not applied.</p>
 </div>
 </div>
 <div id="sensitivity-analysis" class="section level2">
 <h2>Sensitivity analysis</h2>
 <p>As previously mentioned, the RPSFTM has two assumptions:</p>
 <ol style="list-style-type: decimal">
-<li>The only difference between randomised groups is the treatment received.</li>
-<li>The treatment effect is the same for all individuals regardless of when treatment is received.</li>
+<li>The only difference between randomised groups is the treatment
+received.</li>
+<li>The treatment effect is the same for all individuals regardless of
+when treatment is received.</li>
 </ol>
-<p>Whilst the first assumption is plausible in a randomised controlled trial, the latter may be unlikely to hold if, for example, control group patients can only switch at disease progression then the treatment benefit may be different in these individuals compared to those randomised to the experimental treatment. The <code>rpsftm</code> function allows for investigation of deviations from the common treatment effect assumption by featuring a treatment effect modifier variable which means the treatment effect can be varied across individuals. This is achieved by multiplying <span class="math inline">\(\psi\)</span> by some factor <span class="math inline">\(k_i\)</span>: <span class="math display">\[
+<p>Whilst the first assumption is plausible in a randomised controlled
+trial, the latter may be unlikely to hold if, for example, control group
+patients can only switch at disease progression then the treatment
+benefit may be different in these individuals compared to those
+randomised to the experimental treatment. The <code>rpsftm</code>
+function allows for investigation of deviations from the common
+treatment effect assumption by featuring a treatment effect modifier
+variable which means the treatment effect can be varied across
+individuals. This is achieved by multiplying <span class="math inline">\(\psi\)</span> by some factor <span class="math inline">\(k_i\)</span>: <span class="math display">\[
 U_i = T_i^{off} + T_i^{on}\exp(k_i\psi).
-\]</span> For example, we can investigate what would happen to the estimate of <span class="math inline">\(\psi\)</span> if the treatment effect in switchers was half of that in the experimental group by setting <span class="math inline">\(k_i = 1\)</span> for patients in the experimental group and <span class="math inline">\(k_i = 0.5\)</span> for patients in the control group.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a></span>
-<span id="cb13-2"><a href="#cb13-2"></a>weight &lt;-<span class="st"> </span><span class="kw">with</span>(immdef, <span class="kw">ifelse</span>(imm<span class="op">==</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="fl">0.5</span>))</span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="kw">rpsftm</span>( <span class="kw">Surv</span>( progyrs, prog) <span class="op">~</span><span class="st"> </span><span class="kw">rand</span>( imm, rx), <span class="dt">data =</span> immdef, <span class="dt">censor_time =</span> censyrs,</span>
-<span id="cb13-4"><a href="#cb13-4"></a>        <span class="dt">treat_modifier =</span> weight</span>
-<span id="cb13-5"><a href="#cb13-5"></a>        )</span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="co">#&gt;   arm   rx.Min. rx.1st Qu. rx.Median   rx.Mean rx.3rd Qu.   rx.Max.</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a><span class="co">#&gt; 1   0 0.0000000  0.0000000 0.0000000 0.1574062  0.2547779 0.9770941</span></span>
-<span id="cb13-8"><a href="#cb13-8"></a><span class="co">#&gt; 2   1 1.0000000  1.0000000 1.0000000 1.0000000  1.0000000 1.0000000</span></span>
-<span id="cb13-9"><a href="#cb13-9"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb13-10"><a href="#cb13-10"></a><span class="co">#&gt; rpsftm(formula = Surv(progyrs, prog) ~ rand(imm, rx), data = immdef, </span></span>
-<span id="cb13-11"><a href="#cb13-11"></a><span class="co">#&gt;     censor_time = censyrs, treat_modifier = weight)</span></span>
-<span id="cb13-12"><a href="#cb13-12"></a><span class="co">#&gt; </span></span>
-<span id="cb13-13"><a href="#cb13-13"></a><span class="co">#&gt;          N Observed Expected (O-E)^2/E (O-E)^2/V</span></span>
-<span id="cb13-14"><a href="#cb13-14"></a><span class="co">#&gt; .arm=0 500      157      157  8.79e-06  1.86e-05</span></span>
-<span id="cb13-15"><a href="#cb13-15"></a><span class="co">#&gt; .arm=1 500      143      143  9.66e-06  1.86e-05</span></span>
-<span id="cb13-16"><a href="#cb13-16"></a><span class="co">#&gt; </span></span>
-<span id="cb13-17"><a href="#cb13-17"></a><span class="co">#&gt;  Chisq= 0  on 1 degrees of freedom, p= 1 </span></span>
-<span id="cb13-18"><a href="#cb13-18"></a><span class="co">#&gt; </span></span>
-<span id="cb13-19"><a href="#cb13-19"></a><span class="co">#&gt; psi: -0.1706579</span></span>
-<span id="cb13-20"><a href="#cb13-20"></a><span class="co">#&gt; exp(psi): 0.84311</span></span></code></pre></div>
-<p>Recensoring is undertaken in a similar way by recensoring at the minimum possible censoring time: <span class="math display">\[
+\]</span> For example, we can investigate what would happen to the
+estimate of <span class="math inline">\(\psi\)</span> if the treatment
+effect in switchers was half of that in the experimental group by
+setting <span class="math inline">\(k_i = 1\)</span> for patients in the
+experimental group and <span class="math inline">\(k_i = 0.5\)</span>
+for patients in the control group.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>weight <span class="ot">&lt;-</span> <span class="fu">with</span>(immdef, <span class="fu">ifelse</span>(imm<span class="sc">==</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="fl">0.5</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="fu">rpsftm</span>( <span class="fu">Surv</span>( progyrs, prog) <span class="sc">~</span> <span class="fu">rand</span>( imm, rx), <span class="at">data =</span> immdef, <span class="at">censor_time =</span> censyrs,</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>        <span class="at">treat_modifier =</span> weight</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>        )</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt;   arm   rx.Min. rx.1st Qu. rx.Median   rx.Mean rx.3rd Qu.   rx.Max.</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; 1   0 0.0000000  0.0000000 0.0000000 0.1574062  0.2547779 0.9770941</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; 2   1 1.0000000  1.0000000 1.0000000 1.0000000  1.0000000 1.0000000</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; rpsftm(formula = Surv(progyrs, prog) ~ rand(imm, rx), data = immdef, </span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt;     censor_time = censyrs, treat_modifier = weight)</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt;          N Observed Expected (O-E)^2/E (O-E)^2/V</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; .arm=0 500      157      157  8.79e-06  1.86e-05</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; .arm=1 500      143      143  9.66e-06  1.86e-05</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="co">#&gt;  Chisq= 0  on 1 degrees of freedom, p= 1 </span></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co">#&gt; psi: -0.1706579</span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co">#&gt; exp(psi): 0.84311</span></span></code></pre></div>
+<p>Recensoring is undertaken in a similar way by recensoring at the
+minimum possible censoring time: <span class="math display">\[
 D_i^*(\psi) = min(C_i, C_i\exp(k_i\psi)).
-\]</span> Again, if <span class="math inline">\(D_i^*(\psi) &lt; U_i\)</span>, then <span class="math inline">\(U_i\)</span> is replaced by <span class="math inline">\(D_i^*\)</span> and the censoring indicator is replaced by 0.</p>
+\]</span> Again, if <span class="math inline">\(D_i^*(\psi) &lt;
+U_i\)</span>, then <span class="math inline">\(U_i\)</span> is replaced
+by <span class="math inline">\(D_i^*\)</span> and the censoring
+indicator is replaced by 0.</p>
 </div>
 <div id="limitations" class="section level2">
 <h2>Limitations</h2>
-<p>There are a few cases where we may encounter problems with root finding:</p>
+<p>There are a few cases where we may encounter problems with root
+finding:</p>
 <ol style="list-style-type: decimal">
-<li>The interval (<code>low_psi</code>, <code>hi_psi</code>) may not be wide enough to find one or both of the confidence limits. This can be easily be rectified by extending the range.</li>
-<li>No confidence limits may exist (i.e. they tail off to <span class="math inline">\(\pm \infty\)</span>). In this case they should be reported as <span class="math inline">\(\pm \infty\)</span>.</li>
-<li>There may be multiple solutions to <span class="math inline">\(Z(\psi)=0\)</span> within the interval (<code>low_psi</code>, <code>hi_psi</code>). <code>uniroot</code> will return one value even if this is the case.</li>
+<li>The interval (<code>low_psi</code>, <code>hi_psi</code>) may not be
+wide enough to find one or both of the confidence limits. This can be
+easily be rectified by extending the range.</li>
+<li>No confidence limits may exist (i.e. they tail off to <span class="math inline">\(\pm \infty\)</span>). In this case they should be
+reported as <span class="math inline">\(\pm \infty\)</span>.</li>
+<li>There may be multiple solutions to <span class="math inline">\(Z(\psi)=0\)</span> within the interval
+(<code>low_psi</code>, <code>hi_psi</code>). <code>uniroot</code> will
+return one value even if this is the case.</li>
 </ol>
-<p>For all of the above a graph of <span class="math inline">\(Z(\psi)\)</span> against <span class="math inline">\(\psi\)</span> would highlight the issue. Another possibility is for the <code>coxph</code> function to fail to converge. This occurs when the maximum likelihood estimate of a coefficient is infinity, e.g. if one of the treatment groups has no events. The <code>coxph</code> documentation states that the Wald statistic should be ignored in this case and therefore the <code>rpsftm</code> output should be taken with caution.</p>
+<p>For all of the above a graph of <span class="math inline">\(Z(\psi)\)</span> against <span class="math inline">\(\psi\)</span> would highlight the issue. Another
+possibility is for the <code>coxph</code> function to fail to converge.
+This occurs when the maximum likelihood estimate of a coefficient is
+infinity, e.g. if one of the treatment groups has no events. The
+<code>coxph</code> documentation states that the Wald statistic should
+be ignored in this case and therefore the <code>rpsftm</code> output
+should be taken with caution.</p>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
-<p>Concorde Coordinating Committee. (1994). Concorde: MRC/ANRS randomised double-blind controlled trial of immediate and deferred zidovudine in symptom-free HIV infection. <em>Lancet</em> 343: 871-881.</p>
-<p>Robins, J.M. and Tsiatis, A.A. (1991). Correcting for non-compliance in randomized trials using rank preserving structural failure time models. <em>Communications in Statistics Theory and Methods</em> 20:2609-2631.</p>
-<p>White, I.R., Babiker, A.G., Walker, S. and Darbyshire, J.H. (1999). Randomisation-based methods for correcting for treatment changes: examples from the Concorde trial. <em>Statistics in Medicine</em> 18: 2617-2634.</p>
-<p>White, I.R., Walker, S., Babiker, A.G. and Darbyshire, J.H. (1997). Impact of treatment changes on the interpretation of the Concorde trial. <em>AIDS</em> 11: 999-1006.</p>
+<p>Concorde Coordinating Committee. (1994). Concorde: MRC/ANRS
+randomised double-blind controlled trial of immediate and deferred
+zidovudine in symptom-free HIV infection. <em>Lancet</em> 343:
+871-881.</p>
+<p>Robins, J.M. and Tsiatis, A.A. (1991). Correcting for non-compliance
+in randomized trials using rank preserving structural failure time
+models. <em>Communications in Statistics Theory and Methods</em>
+20:2609-2631.</p>
+<p>White, I.R., Babiker, A.G., Walker, S. and Darbyshire, J.H. (1999).
+Randomisation-based methods for correcting for treatment changes:
+examples from the Concorde trial. <em>Statistics in Medicine</em> 18:
+2617-2634.</p>
+<p>White, I.R., Walker, S., Babiker, A.G. and Darbyshire, J.H. (1997).
+Impact of treatment changes on the interpretation of the Concorde trial.
+<em>AIDS</em> 11: 999-1006.</p>
 </div>
 
 

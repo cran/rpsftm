@@ -7,7 +7,7 @@
 \alias{extract_z.survreg}
 \title{Extracting the z-statistic from a survival object}
 \usage{
-extract_z(x, ...)
+extract_z(fit, ...)
 
 \method{extract_z}{survdiff}(fit, ...)
 
@@ -16,11 +16,9 @@ extract_z(x, ...)
 \method{extract_z}{survreg}(fit, arm, ...)
 }
 \arguments{
-\item{x}{an R object}
+\item{fit}{a fitted survival object : survdiff, coxph, survreg}
 
 \item{...}{extendible arguments to the S3 method}
-
-\item{fit}{a fitted survival object : survdiff, coxph, survreg}
 
 \item{arm}{a character vector giving the name of the covariate representing the treatment arm.}
 }
@@ -32,13 +30,13 @@ Generic S3 methods to extract the z-statistic from a set of survival fit objects
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{survdiff}: Method for survdiff
+\item \code{extract_z(survdiff)}: Method for survdiff
 
-\item \code{coxph}: Method for coxph objects
+\item \code{extract_z(coxph)}: Method for coxph objects
 
-\item \code{survreg}: Method for survreg objects
+\item \code{extract_z(survreg)}: Method for survreg objects
+
 }}
-
 \author{
 Simon Bond
 }
